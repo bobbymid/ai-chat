@@ -29,7 +29,7 @@ from kivy.utils import platform
 # ================== НАСТРОЙКИ ==================
    # <-- вставь сюда
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "openai/gpt-4o-mini"      # можно поменять на любую модель OpenRouter
+MODEL = "openrouter/free"      # можно поменять на любую модель OpenRouter
 
 if platform == "android":
     from android.permissions import request_permissions, Permission
