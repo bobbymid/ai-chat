@@ -11,9 +11,9 @@ requirements = python3,kivy,requests,urllib3,charset-normalizer,idna,certifi,ope
 
 orientation = portrait
 fullscreen = 0
-
+android.accept_sdk_license = True
 android.permissions = INTERNET
 android.api = 33
 android.minapi = 24
-android.archs = arm64-v8a,armeabi-v7a
+android.archs = arm64-v8a
 android.allow_backup = True
