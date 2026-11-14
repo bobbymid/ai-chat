@@ -3,12 +3,12 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:   # позт запускать вручную кнопкой
+  workflow_dispatch:
 
 jobs:
   build-android:
     runs-on: ubuntu-22.04
-    timeout-minutes: 120
+    timeout-minutes: 60   # Жесткий лимит на весь процесс (1 час)
 
     steps:
       - name: Checkout
@@ -27,15 +27,14 @@ jobs:
             python3-pip autoconf automake libtool pkg-config \
             zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 \
             cmake libffi-dev libssl-dev
-          # buildozer иногда ищет libtinfo.so.5 — делаем симлинк
           sudo ln -sf /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5 || true
 
-      - name: Install buildozer + cython
+      - name: Install buildozer
         run: |
           python -m pip install --upgrade pip
           pip install buildozer cython==0.29.36 virtualenv
 
-      - name: Cache buildozer (SDK/NDK)
+      - name: Cache buildozer
         uses: actions/cache@v4
         with:
           path: |
@@ -46,9 +45,10 @@ jobs:
             buildozer-${{ runner.os }}-
 
       - name: Build with buildozer
+        timeout-minutes: 50 # Жесткий лимит конкретно на сборку
         run: |
-          # buildozer любит спрашивать подтверждения — отвечаем yes
-          yes | buildozer -v android debug
+          # Флаг -v для подробных логов, --no-optimize чтобы быстрее
+          yes | buildozer -v android debug || (echo "BUILD FAILED"; tail -n 100 .buildozer/android/platform/build-*/build.log; exit 1)
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
